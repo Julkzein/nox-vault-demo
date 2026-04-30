@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Anybody:wght@400;500;600;700;800;900&family=Mulish:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Icons&display=swap');
+@import "tailwindcss";
+@import "../ds/colors_and_type.css";
+
+html,
+body {
+  min-height: 100%;
+  background: var(--ct-bg);
+  color: var(--ct-fg-2);
+  font-family: var(--ct-font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+@keyframes ct-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ct-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.ct-pulse {
+  animation: ct-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ct-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ct-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ct-tip:hover .ct-tip-body {
+  opacity: 1 !important;
+}
+
+
+/* Align RainbowKit modal accent with our brand. */
+[data-rk] {
+  --rk-colors-accentColor: var(--ct-brand);
+}
+
+/* ──────────────── Wizard responsive ────────────────
+ * The wizard default layout is a 300px sidebar + fluid content. Below 900px the sidebar
+ * collapses (keeps the top-nav and progress header as the only wizard chrome) and content
+ * padding shrinks so forms stay usable on laptops and narrow split-screens. */
+@media (max-width: 900px) {
+  [data-wizard-sidebar] { display: none !important; }
+  [data-wizard-content] { padding: 24px 16px !important; }
+}
