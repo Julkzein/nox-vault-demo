@@ -1,10 +1,16 @@
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
-import { configVariable, defineConfig } from "hardhat/config";
+import { defineConfig } from "hardhat/config";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 // `VAULT_OWNER_PRIVATE_KEY` is read from `process.env`, populated by `dotenv-cli` from `.env`
 // when running scripts via `npm run …`. Other infrastructure secrets (RPC URL, Etherscan API
 // key) live in the Hardhat keystore, accessed through `configVariable`.
-const privateKey = process.env.VAULT_OWNER_PRIVATE_KEY ?? "";
+let privateKey = process.env.VAULT_OWNER_PRIVATE_KEY ?? "";
+if (privateKey && !privateKey.startsWith("0x")) {
+  privateKey = `0x${privateKey}`;
+}
 
 export default defineConfig({
   plugins: [hardhatToolboxViemPlugin],
@@ -12,7 +18,7 @@ export default defineConfig({
   // (mainnet, Arbitrum, Arbitrum Sepolia, Base, …). Get one at https://etherscan.io/myapikey.
   verify: {
     etherscan: {
-      apiKey: configVariable("ETHERSCAN_API_KEY"),
+      apiKey: process.env.ETHERSCAN_API_KEY ?? "",
     },
   },
   solidity: {
@@ -52,13 +58,13 @@ export default defineConfig({
       type: "edr-simulated",
       chainType: "generic",
       chainId: 421614,
-      forking: { url: configVariable("ARBITRUM_SEPOLIA_RPC_URL") },
+      forking: { url: process.env.ARBITRUM_SEPOLIA_RPC_URL ?? "https://sepolia-rollup.arbitrum.io/rpc" },
     },
     arbitrumSepolia: {
       type: "http",
       chainType: "op",
       chainId: 421614,
-      url: configVariable("ARBITRUM_SEPOLIA_RPC_URL"),
+      url: process.env.ARBITRUM_SEPOLIA_RPC_URL ?? "https://sepolia-rollup.arbitrum.io/rpc",
       accounts: privateKey ? [privateKey as `0x${string}`] : [],
     },
   },

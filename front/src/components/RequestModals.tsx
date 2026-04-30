@@ -265,7 +265,7 @@ export function RequestDepositModal({
           // TODO: Live code here
           // 1. Encrypt `amountWei` as euint256 bound to the vault.
           // 2. Stash on window: `window.__noxEnc = { handle, proof }`
-          
+
           return undefined;
         },
       },
@@ -496,7 +496,7 @@ export function RequestRedeemModal({
           // TODO: Live code here
           // 1. Encrypt `amountWei` as euint256 bound to the vault.
           // 2. Stash on window: `window.__noxEncR = { handle, proof }`
-          
+
           return undefined;
         },
       },
