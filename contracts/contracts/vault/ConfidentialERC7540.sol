@@ -47,7 +47,6 @@ import {IConfidentialERC7540} from "../interfaces/IConfidentialERC7540.sol";
  * The vault owner is the only account that can observe aggregated totals (encrypted handle ACL
  * is granted to the vault and `owner()`). Individual users see only their own buckets.
  *
- * TODO(prod):
  *  - Multi-request support. Currently each controller has a single "bucket" per flow; submitting
  *    a second request before approval simply accumulates in the same bucket. EIP-7540 allows
  *    multiple concurrent requests via `requestId`.
