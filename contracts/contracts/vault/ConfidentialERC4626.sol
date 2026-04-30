@@ -28,8 +28,6 @@ import {IConfidentialERC4626} from "../interfaces/IConfidentialERC4626.sol";
  * (`shares = assets * (totalSupply + 10^offset) / (totalAssets + 1)`).
  *
  * Simplifying assumptions for the PoC:
- *  - TODO(prod): slippage protection.
- *  - TODO(prod): NAV disclosure — expose `requestNavDisclosure()`.
  */
 contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
     // ============ Storage ============
@@ -58,7 +56,6 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         override
         returns (euint256 shares)
     {
-        // TODO(prod): enforce `maxDeposit(receiver)` cap.
         euint256 assets = Nox.fromExternal(encryptedAssets, inputProof);
         (euint256 assetsBefore, euint256 supplyBefore) = _snapshot();
         shares = _convertToShares(assets, assetsBefore, supplyBefore);
@@ -72,7 +69,6 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         override
         returns (euint256 assets)
     {
-        // TODO(prod): enforce `maxMint(receiver)` cap.
         euint256 shares = Nox.fromExternal(encryptedShares, inputProof);
         (euint256 assetsBefore, euint256 supplyBefore) = _snapshot();
         assets = _convertToAssets(shares, assetsBefore, supplyBefore);
@@ -86,7 +82,6 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         address receiver,
         address owner
     ) external virtual override returns (euint256 shares) {
-        // TODO(prod): enforce `maxWithdraw(owner)` cap.
         require(isOperator(owner, msg.sender), ERC7984UnauthorizedSpender(owner, msg.sender));
         euint256 assets = Nox.fromExternal(encryptedAssets, inputProof);
         (euint256 assetsBefore, euint256 supplyBefore) = _snapshot();
@@ -101,7 +96,6 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         override
         returns (euint256 assets)
     {
-        // TODO(prod): enforce `maxRedeem(owner)` cap.
         require(isOperator(owner, msg.sender), ERC7984UnauthorizedSpender(owner, msg.sender));
         euint256 shares = Nox.fromExternal(encryptedShares, inputProof);
         (euint256 assetsBefore, euint256 supplyBefore) = _snapshot();
