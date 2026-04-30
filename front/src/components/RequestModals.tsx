@@ -262,17 +262,10 @@ export function RequestDepositModal({
       {
         label: "Encrypt amount via Nox handle SDK",
         run: async () => {
-          // Encrypts `amountWei` as euint256 bound to the vault. Does NOT emit a tx.
-          const { handle, handleProof } = await handleClient.encryptInput(
-            amountWei,
-            "uint256",
-            vaultAddress,
-          );
-          // Stash on window for the next step — avoids re-encrypting.
-          (window as unknown as { __noxEnc?: { handle: Hex; proof: Hex } }).__noxEnc = {
-            handle: handle as Hex,
-            proof: handleProof as Hex,
-          };
+          // TODO: Live code here
+          // 1. Encrypt `amountWei` as euint256 bound to the vault.
+          // 2. Stash on window: `window.__noxEnc = { handle, proof }`
+          
           return undefined;
         },
       },
@@ -500,15 +493,10 @@ export function RequestRedeemModal({
       {
         label: "Encrypt share amount via Nox handle SDK",
         run: async () => {
-          const { handle, handleProof } = await handleClient.encryptInput(
-            amountWei,
-            "uint256",
-            vaultAddress,
-          );
-          (window as unknown as { __noxEncR?: { handle: Hex; proof: Hex } }).__noxEncR = {
-            handle: handle as Hex,
-            proof: handleProof as Hex,
-          };
+          // TODO: Live code here
+          // 1. Encrypt `amountWei` as euint256 bound to the vault.
+          // 2. Stash on window: `window.__noxEncR = { handle, proof }`
+          
           return undefined;
         },
       },

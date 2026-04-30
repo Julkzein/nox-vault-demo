@@ -212,10 +212,9 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         virtual
         returns (euint256 shares)
     {
-        euint256 numerator = Nox.mul(assets, Nox.add(totalSupplyBefore, Nox.toEuint256(10 ** _decimalsOffset())));
-        euint256 denominator = Nox.add(totalAssetsBefore, Nox.toEuint256(1));
-        shares = Nox.div(numerator, denominator);
-        Nox.allowThis(shares);
+        // TODO: Live code here
+        // shares = assets * (totalSupply + 10^offset) / (totalAssets + 1)
+        
     }
 
     /**
@@ -227,10 +226,9 @@ contract ConfidentialERC4626 is ERC7984, IConfidentialERC4626 {
         virtual
         returns (euint256 assets)
     {
-        euint256 numerator = Nox.mul(shares, Nox.add(totalAssetsBefore, Nox.toEuint256(1)));
-        euint256 denominator = Nox.add(totalSupplyBefore, Nox.toEuint256(10 ** _decimalsOffset()));
-        assets = Nox.div(numerator, denominator);
-        Nox.allowThis(assets);
+        // TODO: Live code here
+        // assets = shares * (totalAssets + 1) / (totalSupply + 10^offset)
+        
     }
 
     /**
