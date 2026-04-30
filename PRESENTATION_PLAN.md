@@ -19,18 +19,18 @@ This guide provides a step-by-step script and live coding guide for a 20-25 minu
 - Welcome everyone! Today we're building a Confidential Vault.
 - Standard ERC-4626 vaults leak information: an observer can see exactly how much you deposited and your exact share of the pool.
 - Even worse, they can infer the exact total value locked (TVL) and trade flows.
-- We will use **iExec Nox** to build a vault where user balances, total assets, and total supply are entirely encrypted using Fully Homomorphic Encryption (FHE).
+- We will use **iExec Nox** to build a vault where user balances, total assets, and total supply are kept confidential using Trusted Execution Environments (TEEs).
 - We'll build the missing parts of the smart contract and frontend together!
 
 ---
 
 ## 🕒 0:05 - 0:12 | Live Coding: Smart Contract
-**Goal:** Implement the FHE math in `ConfidentialERC4626.sol`.
+**Goal:** Implement the math in `ConfidentialERC4626.sol` that gets routed to the TEE Coprocessor.
 
 **Talking Points:**
 - Let's look at `contracts/contracts/vault/ConfidentialERC4626.sol`.
 - We need to implement `_convertToShares` and `_convertToAssets`. 
-- In normal Solidity, we'd do `shares = assets * totalSupply / totalAssets`. But here, those values are encrypted! We must use `Nox.mul` and `Nox.div`.
+- In normal Solidity, we'd do `shares = assets * totalSupply / totalAssets`. But here, those values are encrypted! We must use `Nox.mul` and `Nox.div` to route the computation to the secure TEE enclave.
 
 ### Step 1: `_convertToShares`
 Navigate to `_convertToShares` (around line 210) and replace the `// TODO` with:
@@ -48,7 +48,7 @@ Navigate to `_convertToShares` (around line 210) and replace the `// TODO` with:
     }
 ```
 **Explanation:** 
-- We use `Nox.add`, `Nox.mul`, and `Nox.div` to perform math on ciphertexts directly on the blockchain. 
+- We use `Nox.add`, `Nox.mul`, and `Nox.div`. These don't run in public EVM memory; they instruct the iExec Nox Coprocessor to decrypt the values inside a secure TEE enclave, perform the math, and re-encrypt the result.
 - `Nox.allowThis(shares)` ensures the vault contract itself has ACL (Access Control List) permissions to manipulate this new encrypted value later.
 
 ### Step 2: `_convertToAssets`
@@ -81,8 +81,8 @@ npx hardhat ignition deploy ignition/modules/ConfidentialVaultFactory.ts --netwo
 ```
 
 **Talking Points:**
-- Hardhat compiles our contract with the Nox FHE operations.
-- We deploy it to Arbitrum Sepolia. The Nox protocol is integrated natively there, meaning FHE operations are incredibly fast compared to traditional L1 FHE rollups.
+- Hardhat compiles our contract with the Nox Coprocessor operations.
+- We deploy it to Arbitrum Sepolia. The Nox protocol is integrated there, meaning TEE enclave operations are executed quickly and securely off-chain while maintaining on-chain state.
 
 ---
 
@@ -91,7 +91,7 @@ npx hardhat ignition deploy ignition/modules/ConfidentialVaultFactory.ts --netwo
 
 **Talking Points:**
 - Now that the smart contract is ready, the frontend needs to send encrypted inputs. We can't just send plain numbers, or it defeats the whole purpose!
-- We'll use the `@iexec-nox/nox-client-sdk` to encrypt the user's deposit amount locally before it ever touches the network.
+- We'll use the `@iexec-nox/nox-client-sdk` to encrypt the user's deposit amount locally using the TEE public key before it ever touches the network.
 
 ### Step 3: Deposit Encryption
 Navigate to `front/src/components/RequestModals.tsx` (around line 262) and replace the `// TODO` with:
@@ -113,9 +113,9 @@ Navigate to `front/src/components/RequestModals.tsx` (around line 262) and repla
         },
 ```
 **Explanation:** 
-- `handleClient.encryptInput` encrypts the value directly in the browser. 
+- `handleClient.encryptInput` encrypts the value directly in the browser so that only the Nox TEE enclave can decrypt it. 
 - It creates an `externalEuint256` (the `handle`) and an `inputProof` verifying it was encrypted properly.
-- We bind this encryption specifically to `vaultAddress`, so no other contract can decrypt it!
+- We bind this encryption specifically to `vaultAddress`, so no other contract can use it!
 
 ### Step 4: Redeem Encryption
 Scroll down in `RequestModals.tsx` (around line 493) to the redeem flow and replace the `// TODO` with:
@@ -156,7 +156,7 @@ npm run dev
 - Once mined, the balance updates securely. We just built a confidential ERC-4626 vault!
 
 ## 🎉 Wrap Up
-- The FHE math ran directly on the blockchain.
-- The input was encrypted client-side.
+- The math ran directly in a secure TEE enclave via the Nox Coprocessor.
+- The input was encrypted client-side using the enclave's public key.
 - State is fully shielded from observers.
 - Thank you! Check out the `nox-dev-kit` to start building!
